@@ -3,13 +3,13 @@
 default: up
 
 build:
-	docker build -t pgarrett/ldap-alpine .
+	docker build -t hakni/openldap-alpine .
 
 clean:
 	docker rm -f ldap; true
 
 run: build clean
-	docker run -d --name ldap -p 389:389 pgarrett/ldap-alpine
+	docker run -d --name ldap -p 389:389 hakni/openldap-alpine
 
 up:
 	docker-compose build
@@ -21,7 +21,7 @@ down:
 test: down up
 	@sleep 2
 	@cp .ldaprc ~
-	ldapsearch "uid=pgarrett"
+	ldapsearch "uid=hakni"
 
 help:
 	@echo "Usage: make build|clean|run|up|down|test"
