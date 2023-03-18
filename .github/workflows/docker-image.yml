@@ -18,8 +18,8 @@ jobs:
       env:
         tag_version: 0.${{ github.run_number }}.${{ github.run_attempt }}
       run: |
-        docker build . --file Dockerfile --tag hakni/openldap-alpine:$tag_version
+        docker build . --file Dockerfile --tag hakni/openldap-alpine:latest --tag hakni/openldap-alpine:$tag_version --tag hakni/openldap-alpine:3.17.2-$tag_version
         docker login --username ${{ secrets.DOCKERHUB_USERNAME }} --password-stdin <<< ${{ secrets.DOCKERHUB_PASSWORD }}
-        docker push hakni/openldap-alpine:$tag_version
+        docker push --all-tags hakni/openldap-alpine
 
       
