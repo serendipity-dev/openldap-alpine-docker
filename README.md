@@ -1,4 +1,4 @@
-# LDAP Alpine
+# OpenLDAP server on Alpine Linux
 
 The Lightweight Directory Access Protocol (LDAP) is an open, vendor-neutral,
 industry standard application protocol for accessing and maintaining
