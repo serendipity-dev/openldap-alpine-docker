@@ -16,12 +16,12 @@ jobs:
     - uses: actions/checkout@v3
     - name: Build-Publish the Docker image
       env:
-        tag_version: ${{ github.run_id }}.${{ github.run_number }}.${{ github.run_attempt }}
+        tag_version: 0.${{ github.run_number }}.${{ github.run_attempt }}
       run: |
         echo '::echo::on'
         docker build . --file Dockerfile --tag hakni/openldap-alpine:$tag_version
         echo '::echo::off'
-        echo ${{ secrets.DOCKERHUB_PASSWORD }} | docker login --username=${{ secrets.DOCKERHUB_USERNAME }} --email=alfredo.schiappa@gmail.com --password-stdin
+        echo ${{ secrets.DOCKERHUB_PASSWORD }} | docker login --username=${{ secrets.DOCKERHUB_USERNAME }} --password-stdin
         echo '::echo::on'
         docker push hakni/openldap-alpine:$tag_version
         echo '::echo::off'
