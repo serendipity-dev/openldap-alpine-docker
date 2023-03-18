@@ -1,4 +1,4 @@
-FROM alpine
+FROM alpine:3.17.2
 
 ENV ORGANISATION_NAME "Example Ltd"
 ENV SUFFIX "dc=example,dc=com"
