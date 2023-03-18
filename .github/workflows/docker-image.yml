@@ -18,12 +18,9 @@ jobs:
       env:
         tag_version: 0.${{ github.run_number }}.${{ github.run_attempt }}
       run: |
-        echo '::echo::on'
+        echo on
         docker build . --file Dockerfile --tag hakni/openldap-alpine:$tag_version
         docker login --username ${{ secrets.DOCKERHUB_USERNAME }} --password-stdin <<< ${{ secrets.DOCKERHUB_PASSWORD }}
-        echo '::echo::on'
         docker push hakni/openldap-alpine:$tag_version
-        echo '::echo::off'
-      
 
       
