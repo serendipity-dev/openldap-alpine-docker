@@ -20,8 +20,7 @@ jobs:
       run: |
         echo '::echo::on'
         docker build . --file Dockerfile --tag hakni/openldap-alpine:$tag_version
-        echo '::echo::off'
-        echo ${{ secrets.DOCKERHUB_PASSWORD }} | docker login --username=${{ secrets.DOCKERHUB_USERNAME }} --password-stdin
+        docker login --username ${{ secrets.DOCKERHUB_USERNAME }} --password-stdin < echo ${{ secrets.DOCKERHUB_PASSWORD }}
         echo '::echo::on'
         docker push hakni/openldap-alpine:$tag_version
         echo '::echo::off'
