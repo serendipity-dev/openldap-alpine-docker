@@ -18,10 +18,10 @@ to customise LDAP:
 | SUFFIX | Organisation distinguished name | dc=example,dc=com |
 | ROOT_USER | Root username | admin |
 | ROOT_PW | Root password | password |
-| USER_UID | Initial user's uid | pgarrett |
-| USER_GIVEN_NAME | Initial user's given name | Phill |
-| USER_SURNAME | Initial user's surname | Garrett |
-| USER_EMAIL | Initial user's email | pgarrett@example.com |
+| USER_UID | Initial user's uid | alfredo.schiappa |
+| USER_GIVEN_NAME | Initial user's given name | Alfredo |
+| USER_SURNAME | Initial user's surname | Schiappa |
+| USER_EMAIL | Initial user's email | alfredo.schiappa@example.com |
 | USER_PW | Initial user's password | password |
 | ACCESS_CONTROL | Global access control | access to * by * read |
 | LOG_LEVEL | LDAP logging level, see below for valid values. | stats |
@@ -33,13 +33,13 @@ docker run -t -p 389:389 \
   -e ORGANISATION_NAME="Beispiel gmbh" \
   -e SUFFIX="dc=beispiel,dc=de" \
   -e ROOT_PW="geheimnis" \
-  pgarrett/ldap-alpine
+  hakni/openldap-alpine
 ```
 
 Search for user:
 
 ```
-ldapsearch -x -b "dc=beispiel,dc=de" "uid=pgarrett"
+ldapsearch -x -b "dc=beispiel,dc=de" "uid=alfredo.schiappa"
 ```
 
 ## Logging Levels
@@ -71,14 +71,14 @@ Copy ldif files to /ldif and the container will execute them. This can be
 done either by extending this Dockerfile with your own:
 
 ```
-FROM pgarrett/ldap-alpine
+FROM hakni/openldap-alpine
 COPY my-users.ldif /ldif/
 ```
 
 Or by mounting your scripts directory into the container:
 
 ```
-docker run -t -p 389:389 -v /my-ldif:/ldif pgarrett/ldap-alpine
+docker run -t -p 389:389 -v /my-ldif:/ldif hakni/openldap-alpine
 ```
 
 ## Persist data
@@ -87,7 +87,7 @@ The container uses a standard mdb backend. To persist this database outside the
 container mount `/var/lib/openldap/openldap-data`. For example:
 
 ```
-docker run -t -p 389:389 -v /my-backup:/var/lib/openldap/openldap-data pgarrett/ldap-alpine
+docker run -t -p 389:389 -v /my-backup:/var/lib/openldap/openldap-data hakni/openldap-alpine
 ```
 
 ## Transport Layer Security
@@ -112,7 +112,7 @@ docker run -t -p 389:389 \
   -e CA_FILE /etc/ssl/certs/ca.pem \
   -e KEY_FILE /etc/ssl/certs/public.key \
   -e CERT_FILE /etc/ssl/certs/public.crt \
-  pgarrett/ldap-alpine
+  hakni/openldap-alpine
 ```
 
 Where `/my-certs` on the host contains the three certificate files `ca.pem`,
@@ -140,13 +140,13 @@ and allows all others to read these entries:
 ```
 docker run -t -p 389:389 \
   -e ACCESS_CONTROL="access to * by self write by anonymous auth by users read" \
-  pgarrett/ldap-alpine
+  hakni/openldap-alpine
 ```
 
-Now `ldapsearch -x -b "dc=example,dc=com" "uid=pgarret"` will return no results.
+Now `ldapsearch -x -b "dc=example,dc=com" "uid=alfredo.schiappa"` will return no results.
 
 In order to search you will need to authenticate (bind) first:
 
 ```
-ldapsearch -D "uid=pgarrett,ou=Users,dc=example,dc=com" -w password -b "dc=example,dc=com" "uid=pgarrett"
+ldapsearch -D "uid=alfredo.schiappa,ou=Users,dc=example,dc=com" -w password -b "dc=example,dc=com" "uid=alfredo.schiappa"
 ```
