@@ -18,7 +18,7 @@ to customise LDAP:
 | SUFFIX | Organisation distinguished name | dc=example,dc=com |
 | ROOT_USER | Root username | admin |
 | ROOT_PW | Root password | password |
-| USER_UID | Initial user's uid | alfredo.schiappa |
+| USER_UID | Initial user's uid | hakni |
 | USER_GIVEN_NAME | Initial user's given name | Alfredo |
 | USER_SURNAME | Initial user's surname | Schiappa |
 | USER_EMAIL | Initial user's email | alfredo.schiappa@example.com |
@@ -39,7 +39,7 @@ docker run -t -p 389:389 \
 Search for user:
 
 ```
-ldapsearch -x -b "dc=beispiel,dc=de" "uid=alfredo.schiappa"
+ldapsearch -x -b "dc=beispiel,dc=de" "uid=hakni"
 ```
 
 ## Logging Levels
@@ -143,10 +143,10 @@ docker run -t -p 389:389 \
   hakni/openldap-alpine
 ```
 
-Now `ldapsearch -x -b "dc=example,dc=com" "uid=alfredo.schiappa"` will return no results.
+Now `ldapsearch -x -b "dc=example,dc=com" "uid=hakni"` will return no results.
 
 In order to search you will need to authenticate (bind) first:
 
 ```
-ldapsearch -D "uid=alfredo.schiappa,ou=Users,dc=example,dc=com" -w password -b "dc=example,dc=com" "uid=alfredo.schiappa"
+ldapsearch -D "uid=hakni,ou=Users,dc=example,dc=com" -w password -b "dc=example,dc=com" "uid=hakni"
 ```
