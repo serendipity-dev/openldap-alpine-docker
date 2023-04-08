@@ -52,8 +52,7 @@ sed -i "s~%ROOT_USER%~$ROOT_USER~g" "$SLAPD_CONF"
 sed -i "s~%SUFFIX%~$SUFFIX~g" "$SLAPD_CONF"
 sed -i "s~%ACCESS_CONTROL%~$ACCESS_CONTROL~g" "$SLAPD_CONF"
 
-# encrypt root password before replacing
-#ROOT_PW=$(slappasswd -s "$ROOT_PW")
+# root password should be encrypted in the dockerfile
 sed -i "s~%ROOT_PW%~$ROOT_PW~g" "$SLAPD_CONF"
 
 # replace variables in organisation configuration
