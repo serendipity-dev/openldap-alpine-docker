@@ -5,7 +5,8 @@ industry standard application protocol for accessing and maintaining
 distributed directory information services over an Internet Protocol (IP)
 network.
 
-This image is based on Alpine Linux and OpenLDAP.
+This image is based on Alpine Linux and OpenLDAP. 
+This is a fork from the original image available at https://github.com/gitphill/ldap-alpine from Phill Garrett (https://github.com/gitphill).
 
 ## Customisation
 
