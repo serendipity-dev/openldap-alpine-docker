@@ -50,7 +50,7 @@ fi
 
 sed -i "s~%ROOT_USER%~$ROOT_USER~g" "$SLAPD_CONF"
 sed -i "s~%SUFFIX%~$SUFFIX~g" "$SLAPD_CONF"
-sed -i "/%CUSTOM_SCHEMAS_INCLUDE%/r /etc/openldap/schema_ext/schemas_includes.ext" -e "/%CUSTOM_SCHEMAS_INCLUDE%/d" "$SLAPD_CONF"
+sed -i "/%CUSTOM_SCHEMAS_INCLUDE%/r /etc/openldap/schemas_ext/schemas_includes.ext" -e "/%CUSTOM_SCHEMAS_INCLUDE%/d" "$SLAPD_CONF"
 sed -i "/%CUSTOM_ACS_INCLUDE%/r /etc/openldap/acs_ext/acs_includes.ext" -e "/%CUSTOM_ACS_INCLUDE%/d" "$SLAPD_CONF"
 sed -i "/%CUSTOM_INDEXES_INCLUDE%/r /etc/openldap/indexes_ext/indexes_includes.ext" -e "/%CUSTOM_INDEXES_INCLUDE%/d" "$SLAPD_CONF"
 
