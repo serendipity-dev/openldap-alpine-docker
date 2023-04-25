@@ -8,7 +8,6 @@ ENV USER_UID "hakni"
 ENV USER_GIVEN_NAME "Alfredo"
 ENV USER_SURNAME "Schiappa"
 ENV USER_EMAIL "alfredo.schiappa@example.com"
-ENV ACCESS_CONTROL "access to * by * read"
 ENV LOG_LEVEL "stats"
 
 RUN apk add --update openldap openldap-back-mdb && \
