@@ -21,6 +21,6 @@ RUN chmod +x /docker-entrypoint.sh
 EXPOSE 389
 EXPOSE 636
 
-VOLUME ["/ldif", "/var/lib/openldap/openldap-data", "/etc/ssl/certs"]
+VOLUME ["/ldif", "/var/lib/openldap/openldap-data", "/etc/ssl/certs", "/etc/openldap/acs_ext", "/etc/openldap/schemas_ext", "/etc/openldap/indexes_ext"]
 
 ENTRYPOINT ["/docker-entrypoint.sh"]
