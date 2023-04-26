@@ -4,10 +4,6 @@ ENV ORGANISATION_NAME "Example Ltd"
 ENV SUFFIX "dc=example,dc=com"
 ENV ROOT_USER "admin"
 ENV ROOT_PW "password"
-ENV USER_UID "hakni"
-ENV USER_GIVEN_NAME "Alfredo"
-ENV USER_SURNAME "Schiappa"
-ENV USER_EMAIL "alfredo.schiappa@example.com"
 ENV LOG_LEVEL "stats"
 
 RUN apk add --update openldap openldap-back-mdb && \
