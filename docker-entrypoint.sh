@@ -62,21 +62,10 @@ ORG_CONF="/etc/openldap/organisation.ldif"
 sed -i "s~%SUFFIX%~$SUFFIX~g" "$ORG_CONF"
 sed -i "s~%ORGANISATION_NAME%~$ORGANISATION_NAME~g" "$ORG_CONF"
 
-# replace variables in user configuration
-USER_CONF="/etc/openldap/users.ldif"
-sed -i "s~%SUFFIX%~$SUFFIX~g" "$USER_CONF"
-sed -i "s~%USER_UID%~$USER_UID~g" "$USER_CONF"
-sed -i "s~%USER_GIVEN_NAME%~$USER_GIVEN_NAME~g" "$USER_CONF"
-sed -i "s~%USER_SURNAME%~$USER_SURNAME~g" "$USER_CONF"
-if [ -z "$USER_PW" ]; then USER_PW="password"; fi
-sed -i "s~%USER_PW%~$USER_PW~g" "$USER_CONF"
-sed -i "s~%USER_EMAIL%~$USER_EMAIL~g" "$USER_CONF"
-
-# add organisation and users to ldap (order is important)
+# add organisation to ldap 
 slapadd -l "$ORG_CONF"
-slapadd -l "$USER_CONF"
 
-# add any scripts in ldif
+# add any scripts in ldif (order is important)
 for l in /ldif/*; do
   case "$l" in
     *.ldif)  echo "ENTRYPOINT: adding $l";
