@@ -10,40 +10,22 @@ This is a fork from the original image available at https://github.com/gitphill/
 
 ## Customisation
 
-Override the following environment variables when running the docker container
-to customise LDAP:
+The LDAP server can be configured overriding environment variables and setting up some volumes at specific mount points.
 
-| VARIABLE | DESCRIPTION | DEFAULT |
+### Environment variables for LDAP basic settings
+
+Override the following environment variables when running the docker container to customise LDAP:
+
+| VARIABLE | DESCRIPTION | DEFAULT VALUE |
 | :------- | :---------- | :------ |
 | ORGANISATION_NAME | Organisation name | Example Ltd |
 | SUFFIX | Organisation distinguished name | dc=example,dc=com |
 | ROOT_USER | Root username | admin |
 | ROOT_PW | Root password | password |
-| USER_UID | Initial user's uid | hakni |
-| USER_GIVEN_NAME | Initial user's given name | Alfredo |
-| USER_SURNAME | Initial user's surname | Schiappa |
-| USER_EMAIL | Initial user's email | alfredo.schiappa@example.com |
-| USER_PW | Initial user's password | password |
-| ACCESS_CONTROL | Global access control | access to * by * read |
 | LOG_LEVEL | LDAP logging level, see below for valid values. | stats |
+| TLS_VERIFY_CLIENT | Slapd option for client certificate verification | try, never, demand |
 
-For example:
-
-```
-docker run -t -p 389:389 \
-  -e ORGANISATION_NAME="Beispiel gmbh" \
-  -e SUFFIX="dc=beispiel,dc=de" \
-  -e ROOT_PW="geheimnis" \
-  hakni/openldap-alpine
-```
-
-Search for user:
-
-```
-ldapsearch -x -b "dc=beispiel,dc=de" "uid=hakni"
-```
-
-## Logging Levels
+#### Logging Levels
 
 | NAME | DESCRIPTION |
 | :--- | :---------- |
@@ -63,70 +45,17 @@ ldapsearch -x -b "dc=beispiel,dc=de" "uid=hakni"
 | sync | syncrepl consumer processing |
 | none | only messages that get logged whatever log level is set |
 
-## Custom ldif files
+### Mount points for customizing LDAP schemas, access control and indexes 
 
-`*.ldif` files can be used to add lots of people to the organisation on
-startup.
+Use the following mount points to customizze LDAP schemas, access control and indexes 
 
-Copy ldif files to /ldif and the container will execute them. This can be
-done either by extending this Dockerfile with your own:
-
-```
-FROM hakni/openldap-alpine
-COPY my-users.ldif /ldif/
-```
-
-Or by mounting your scripts directory into the container:
-
-```
-docker run -t -p 389:389 -v /my-ldif:/ldif hakni/openldap-alpine
-```
-
-## Persist data
-
-The container uses a standard mdb backend. To persist this database outside the
-container mount `/var/lib/openldap/openldap-data`. For example:
-
-```
-docker run -t -p 389:389 -v /my-backup:/var/lib/openldap/openldap-data hakni/openldap-alpine
-```
-
-## Transport Layer Security
-
-The container can be started using the encrypted LDAPS protocol. You must
-provide all three TLS environment variables.
-
-| VARIABLE | DESCRIPTION | EXAMPLE |
-| :------- | :---------- | :------ |
-| CA_FILE | PEM-format file containing certificates for the CA's that slapd will trust | /etc/ssl/certs/ca.pem |
-| KEY_FILE | The slapd server private key | /etc/ssl/certs/public.key |
-| CERT_FILE | The slapd server certificate | /etc/ssl/certs/public.crt |
-| TLS_VERIFY_CLIENT | Slapd option for client certificate verification | try, never, demand |
-
-Note these variables inform the entrypoint script (executed on startup) where
-to find the SSL certificates inside the container. So the certificates must
-also be mounted at runtime too, for example:
-
-```
-docker run -t -p 389:389 \
-  -v /my-certs:/etc/ssl/certs \
-  -e CA_FILE /etc/ssl/certs/ca.pem \
-  -e KEY_FILE /etc/ssl/certs/public.key \
-  -e CERT_FILE /etc/ssl/certs/public.crt \
-  hakni/openldap-alpine
-```
-
-Where `/my-certs` on the host contains the three certificate files `ca.pem`,
-`public.key` and `public.crt`.
-
-To disable client certificates set `TLS_VERIFY_CLIENT` to `never` or `try`.
-
-## Access Control
-
-Global access to your directory can be configured via the ACCESS_CONTROL environment variable.
+| MOUNT POINT | DESCRIPTION | PRESCRIPTED CONTENT  | DEFAULT VALUE |
+| :------- | :---------- | :------ | :------ |
+| /etc/openldap/schemas_ext/ |  |  | :------ |
+| /etc/openldap/acs_ext/ |  |  | :------ |
+| /etc/openldap/indexes_ext/ |  |  | :------ |
 
 The default policy allows anyone and everyone to read anything but restricts updates to rootdn.
-
 ```
 access to * by * read
 ```
@@ -135,19 +64,34 @@ Note rootdn can always read and write *everything*!
 
 You can find detailed documentation on access control here https://www.openldap.org/doc/admin24/access-control.html
 
-This following access control allows the user to modify their entry, allows anonymous to authenticate against these entries,
-and allows all others to read these entries:
 
-```
-docker run -t -p 389:389 \
-  -e ACCESS_CONTROL="access to * by self write by anonymous auth by users read" \
-  hakni/openldap-alpine
-```
 
-Now `ldapsearch -x -b "dc=example,dc=com" "uid=hakni"` will return no results.
+### Mount point for customizing LDAP OU and accounts 
 
-In order to search you will need to authenticate (bind) first:
+Use the following mount point to customizze LDAP OU and accounts 
 
-```
-ldapsearch -D "uid=hakni,ou=Users,dc=example,dc=com" -w password -b "dc=example,dc=com" "uid=hakni"
-```
+| MOUNT POINT | DESCRIPTION | PRESCRIPTED CONTENT  | DEFAULT VALUE |
+| :------- | :---------- | :------ | :------ |
+| /ldif/ |  |  | :------ |
+
+### Mount point for setting up LDAP Transport Layer Security certificates
+
+| MOUNT POINT | DESCRIPTION | PRESCRIPTED CONTENT  | DEFAULT VALUE |
+| :------- | :---------- | :------ | :------ |
+| //etc/ssl/certs/ |  |  | :------ |
+
+
+| CA_FILE | PEM-format file containing certificates for the CA's that slapd will trust | /etc/ssl/certs/ca.pem |
+| KEY_FILE | The slapd server private key | /etc/ssl/certs/public.key |
+| CERT_FILE | The slapd server certificate | /etc/ssl/certs/public.crt |
+
+
+### Mount point for persisting data
+
+The container uses a standard mdb backend. To persist this database outside the
+container mount `/var/lib/openldap/openldap-data`
+
+| MOUNT POINT | DESCRIPTION | PRESCRIPTED CONTENT  | DEFAULT VALUE |
+| :------- | :---------- | :------ | :------ |
+| /var/lib/openldap/openldap-data |  |  | :------ |
+
