@@ -54,9 +54,9 @@ Use the following mount points to customizze LDAP schemas, access control and in
 
 | MOUNT POINT | DESCRIPTION | USAGE  | DEFAULT VALUE |
 | :------- | :---------- | :------ | :------ |
-| `/etc/openldap/schemas_ext/` | this is to hold extra schemas to include. By default this image already include _core_, _cosine_, _nis_ and _inetorgperson_ schemas. | Put the extra schemas into this folder together with a file named _schemas_includes.ext_ containing the include directives, for example: *include /etc/openldap/schemas_ext/postfix.schema* |  |
-| `/etc/openldap/acs_ext/` | this is to hold access control policies. The default policy allows anyone and everyone to read anything but restricts updates to rootdn. Of course rootdn can always read and write *everything*! | Write the access control policies into a file named _acs_includes.ext_ placed inside this folder, for example: *access to \* by \** |  |
-| `/etc/openldap/indexes_ext/` | this is to specify further indexes. By default the image specify an index only for _objectClass_ by equality.  | Write the index directives into a file named _indexes_includes.ext_ placed inside this folder, for example: *index mail eq,sub* |  |
+| `/etc/openldap/schemas_ext` | this is to hold extra schemas to include. By default this image already include _core_, _cosine_, _nis_ and _inetorgperson_ schemas. | Put the extra schemas into this folder together with a file named _schemas_includes.ext_ containing the include directives, for example: *include /etc/openldap/schemas_ext/postfix.schema* |  |
+| `/etc/openldap/acs_ext` | this is to hold access control policies. The default policy allows anyone and everyone to read anything but restricts updates to rootdn. Of course rootdn can always read and write *everything*! | Write the access control policies into a file named _acs_includes.ext_ placed inside this folder, for example: *access to \* by \** |  |
+| `/etc/openldap/indexes_ext` | this is to specify further indexes. By default the image specify an index only for _objectClass_ by equality.  | Write the index directives into a file named _indexes_includes.ext_ placed inside this folder, for example: *index mail eq,sub* |  |
 
 ### Mount point for customizing LDAP OU and accounts 
 
@@ -64,13 +64,13 @@ Use the following mount point to customizze LDAP OU and accounts
 
 | MOUNT POINT | DESCRIPTION | USAGE  | DEFAULT VALUE |
 | :------- | :---------- | :------ | :------ |
-| `/ldif/` | this is to hold any organizational unit and accounts definition. BY default no organization units and no accounts other than root are created. | Write organizational units and accounts definition into files with *ldif* extension. Note that files are loaded in the order given by the alpine's shell default sorting which is applied when iterating the directory's content. |  |
+| `/ldif` | this is to hold any organizational unit and accounts definition. BY default no organization units and no accounts other than root are created. | Write organizational units and accounts definition into files with *ldif* extension. Note that files are loaded in the order given by the alpine's shell default sorting which is applied when iterating the directory's content. |  |
 
 ### Mount point for setting up LDAP Transport Layer Security certificates
 
 | MOUNT POINT | DESCRIPTION | USAGE  | DEFAULT VALUE |
 | :------- | :---------- | :------ | :------ |
-| `/etc/ssl/certs/` | this is to hold ca, private key and server certificates. | Place into this folder the ca, private key and server certificates files specified into the corresponding environment variables.  |  |
+| `/etc/ssl/certs` | this is to hold ca, private key and server certificates. | Place into this folder the ca, private key and server certificates files specified into the corresponding environment variables.  |  |
 
 ### Mount point for persisting data
 
