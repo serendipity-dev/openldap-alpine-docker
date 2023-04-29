@@ -23,10 +23,10 @@ Override the following environment variables when running the docker container t
 | ROOT_USER | Root username | admin |
 | ROOT_PW | Root password | password |
 | LOG_LEVEL | LDAP logging level, see below for valid values. | stats |
-| TLS_VERIFY_CLIENT | Slapd option for client certificate verification. Valid values are allow, try, never, demand | demand |
-| CA_FILE | the CA's that slapd will trust | /etc/ssl/certs/ca.pem |
-| KEY_FILE | The slapd server private key | /etc/ssl/certs/public.key |
-| CERT_FILE | The slapd server certificate | /etc/ssl/certs/public.crt |
+| TLS_VERIFY_CLIENT | Option for client certificate verification. Valid values are allow, try, never, demand | demand |
+| CA_FILE | the CA's that openldap will trust | /etc/ssl/certs/ca.pem |
+| KEY_FILE | The openldap server private key | /etc/ssl/certs/public.key |
+| CERT_FILE | The openldap server certificate | /etc/ssl/certs/public.crt |
 
 #### Logging Levels
 
