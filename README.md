@@ -23,7 +23,10 @@ Override the following environment variables when running the docker container t
 | ROOT_USER | Root username | admin |
 | ROOT_PW | Root password | password |
 | LOG_LEVEL | LDAP logging level, see below for valid values. | stats |
-| TLS_VERIFY_CLIENT | Slapd option for client certificate verification | try, never, demand |
+| TLS_VERIFY_CLIENT | Slapd option for client certificate verification. Valid values are allow, try, never, demand | demand |
+| CA_FILE | the CA's that slapd will trust | /etc/ssl/certs/ca.pem |
+| KEY_FILE | The slapd server private key | /etc/ssl/certs/public.key |
+| CERT_FILE | The slapd server certificate | /etc/ssl/certs/public.crt |
 
 #### Logging Levels
 
@@ -51,9 +54,9 @@ Use the following mount points to customizze LDAP schemas, access control and in
 
 | MOUNT POINT | DESCRIPTION | USAGE  | DEFAULT VALUE |
 | :------- | :---------- | :------ | :------ |
-| /etc/openldap/schemas_ext/ | this is to hold extra schemas to include. By default this image already include _core_, _cosine_, _nis_ and _inetorgperson_ schemas. | Put the extra schemas into this folder together with a file named _schemas_includes.ext_ containing the include directives, for example: *include /etc/openldap/schemas_ext/postfix.schema* |  |
-| /etc/openldap/acs_ext/ | this is to hold access control policies. The default policy allows anyone and everyone to read anything but restricts updates to rootdn. Of course rootdn can always read and write *everything*! | Write the access control policies into a file named _acs_includes.ext_ placed inside this folder, for example: *access to \* by \** |  |
-| /etc/openldap/indexes_ext/ | this is to specify further indexes. By default the image specify an index only for _objectClass_ by equality.  | Write the index directives into a file named _indexes_includes.ext_ placed inside this folder, for example: *index mail eq,sub* |  |
+| `/etc/openldap/schemas_ext/` | this is to hold extra schemas to include. By default this image already include _core_, _cosine_, _nis_ and _inetorgperson_ schemas. | Put the extra schemas into this folder together with a file named _schemas_includes.ext_ containing the include directives, for example: *include /etc/openldap/schemas_ext/postfix.schema* |  |
+| `/etc/openldap/acs_ext/` | this is to hold access control policies. The default policy allows anyone and everyone to read anything but restricts updates to rootdn. Of course rootdn can always read and write *everything*! | Write the access control policies into a file named _acs_includes.ext_ placed inside this folder, for example: *access to \* by \** |  |
+| `/etc/openldap/indexes_ext/` | this is to specify further indexes. By default the image specify an index only for _objectClass_ by equality.  | Write the index directives into a file named _indexes_includes.ext_ placed inside this folder, for example: *index mail eq,sub* |  |
 
 ### Mount point for customizing LDAP OU and accounts 
 
@@ -61,26 +64,20 @@ Use the following mount point to customizze LDAP OU and accounts
 
 | MOUNT POINT | DESCRIPTION | USAGE  | DEFAULT VALUE |
 | :------- | :---------- | :------ | :------ |
-| /ldif/ |  |  |  |
+| `/ldif/` | this is to hold any organizational unit and accounts definition. BY default no organization units and no accounts other than root are created. | Write organizational units and accounts definition into files with *ldif* extension. Note that files are loaded in the order given by the alpine's shell default sorting which is applied when iterating the directory's content. |  |
 
 ### Mount point for setting up LDAP Transport Layer Security certificates
 
 | MOUNT POINT | DESCRIPTION | USAGE  | DEFAULT VALUE |
 | :------- | :---------- | :------ | :------ |
-| //etc/ssl/certs/ |  |  |  |
-
-
-| CA_FILE | PEM-format file containing certificates for the CA's that slapd will trust | /etc/ssl/certs/ca.pem |
-| KEY_FILE | The slapd server private key | /etc/ssl/certs/public.key |
-| CERT_FILE | The slapd server certificate | /etc/ssl/certs/public.crt |
-
+| `/etc/ssl/certs/` | this is to hold ca, private key and server certificates. | Place into this folder the ca, private key and server certificates files specified into the corresponding environment variables.  |  |
 
 ### Mount point for persisting data
 
 The container uses a standard mdb backend. To persist this database outside the
 container mount `/var/lib/openldap/openldap-data`
 
-| MOUNT POINT | DESCRIPTION | PRESCRIPTED CONTENT  | DEFAULT VALUE |
-| :------- | :---------- | :------ | :------ |
-| /var/lib/openldap/openldap-data |  |  | :------ |
+| MOUNT POINT | DESCRIPTION |
+| :------- | :---------- |
+| `/var/lib/openldap/openldap-data` | this is to hold the LDAP database. By default the container uses a standard mdb backend.  |
 
