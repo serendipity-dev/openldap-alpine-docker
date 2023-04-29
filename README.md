@@ -49,36 +49,25 @@ Override the following environment variables when running the docker container t
 
 Use the following mount points to customizze LDAP schemas, access control and indexes 
 
-| MOUNT POINT | DESCRIPTION | PRESCRIPTED CONTENT  | DEFAULT VALUE |
+| MOUNT POINT | DESCRIPTION | USAGE  | DEFAULT VALUE |
 | :------- | :---------- | :------ | :------ |
-| /etc/openldap/schemas_ext/ |  |  | :------ |
-| /etc/openldap/acs_ext/ |  |  | :------ |
-| /etc/openldap/indexes_ext/ |  |  | :------ |
-
-The default policy allows anyone and everyone to read anything but restricts updates to rootdn.
-```
-access to * by * read
-```
-
-Note rootdn can always read and write *everything*!
-
-You can find detailed documentation on access control here https://www.openldap.org/doc/admin24/access-control.html
-
-
+| /etc/openldap/schemas_ext/ | this is to hold extra schemas to include. By default this image already include _core_, _cosine_, _nis_ and _inetorgperson_ schemas. | Put the extra schemas into this folder together with a file named _schemas_includes.ext_ containing the include directives, for example: *include /etc/openldap/schemas_ext/postfix.schema* |  |
+| /etc/openldap/acs_ext/ | this is to hold access control policies. The default policy allows anyone and everyone to read anything but restricts updates to rootdn. Of course rootdn can always read and write *everything*! | Write the access control policies into a file named _acs_includes.ext_ placed inside this folder, for example: *access to \* by \** |  |
+| /etc/openldap/indexes_ext/ | this is to specify further indexes. By default the image specify an index only for _objectClass_ by equality.  | Write the index directives into a file named _indexes_includes.ext_ placed inside this folder, for example: *index mail eq,sub* |  |
 
 ### Mount point for customizing LDAP OU and accounts 
 
 Use the following mount point to customizze LDAP OU and accounts 
 
-| MOUNT POINT | DESCRIPTION | PRESCRIPTED CONTENT  | DEFAULT VALUE |
+| MOUNT POINT | DESCRIPTION | USAGE  | DEFAULT VALUE |
 | :------- | :---------- | :------ | :------ |
-| /ldif/ |  |  | :------ |
+| /ldif/ |  |  |  |
 
 ### Mount point for setting up LDAP Transport Layer Security certificates
 
-| MOUNT POINT | DESCRIPTION | PRESCRIPTED CONTENT  | DEFAULT VALUE |
+| MOUNT POINT | DESCRIPTION | USAGE  | DEFAULT VALUE |
 | :------- | :---------- | :------ | :------ |
-| //etc/ssl/certs/ |  |  | :------ |
+| //etc/ssl/certs/ |  |  |  |
 
 
 | CA_FILE | PEM-format file containing certificates for the CA's that slapd will trust | /etc/ssl/certs/ca.pem |
