@@ -3,9 +3,9 @@ name: Docker Image CI
 on:
   push:
     branches: [ "master" ]
-  pull_request:
-    branches: [ "master" ]
-
+    tags:
+      - '[0-9]+.[0-9]+'
+      
 jobs:
 
   build-publish:
@@ -16,7 +16,7 @@ jobs:
     - uses: actions/checkout@v3
     - name: Build-Publish the Docker image
       env:
-        tag_version: 0.${{ github.run_number }}.${{ github.run_attempt }}
+        tag_version: ${{ github.ref_name }}.${{ github.run_number }}
       run: |
         docker build . --file Dockerfile --tag hakni/openldap-alpine:latest --tag hakni/openldap-alpine:$tag_version --tag hakni/openldap-alpine:3.17.2-$tag_version
         docker login --username ${{ secrets.DOCKERHUB_USERNAME }} --password-stdin <<< ${{ secrets.DOCKERHUB_PASSWORD }}
