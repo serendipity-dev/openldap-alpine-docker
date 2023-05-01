@@ -146,7 +146,7 @@ sed "s/%PASSWD%/$(sed -e 's/[\/&]/\\&/g' password.txt)/g" -i docker-compose.yml
 rm password.txt
 ```
 
-Start the container:
+Start the container using the docker compose command:
 
 ```console
 docker compose up -d
@@ -236,7 +236,7 @@ sed "s/%PASSWD%/$(sed -e 's/[\/&]/\\&/g' password.txt)/g" -i openldap/ldif/2-hak
 rm password.txt
 ```
 
-Restart the container:
+Restart the container using the docker compose commands:
 
 ```console
 docker compose down
