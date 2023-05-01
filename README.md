@@ -86,7 +86,7 @@ container mount `/var/lib/openldap/openldap-data`
 
 Here follows some usage examples to get you up and running. These examples assume that you have a Debian Linux machine with docker installed and are familiar with its use.
 
-### Set up and run openldap with minimal customisation
+### Set up and run openldap with minimal customization
 
 First, create a folder to host your docker-compose.yml file and jump into it:
 
@@ -188,4 +188,109 @@ search: 2
 result: 0 Success
 
 # numResponses: 1
+```
+
+### Add custom organizational units and users via ldif files
+
+The folder mounted as /ldif can be used to customize organizational units and add users. Note that filenames are important to get the files in /ldif folder being loaded in the correct order.
+
+Create a file named 1-ou.ldif into openldap/ldif folder so that it contains the definition of the Users organizational unit:
+
+```console
+cd /srv/docker-services/compose-openldap
+touch openldap/ldif/1-ou.ldif
+cat <<EOT >> openldap/ldif/1-ou.ldif
+dn: ou=Users,dc=serendipity-dev,dc=com
+objectClass: organizationalUnit
+ou: Users
+EOT
+```
+
+Create a file named 2-hakni.ldif into openldap/ldif folder so that it contains the definition of the hakni user:
+
+```console
+touch openldap/ldif/2-hakni.ldif
+cat <<EOT >> openldap/ldif/2-hakni.ldif
+dn: uid=hakni,ou=Users,dc=serendipity-dev,dc=com
+cn: Alfredo Schiappa
+objectclass: inetOrgPerson
+objectclass: posixAccount
+mail: hakni@serendipity-dev.com
+homeDirectory: /home/hakni
+loginShell: /bin/sh
+ou: Users
+givenName: Alfredo
+sn: Schiappa
+uid: hakni
+uidNumber: 11001
+gidNumber: 10001
+userpassword: {CRYPT}%PASSWD%
+EOT
+```
+
+Choose a password for hakni, apply some cryptography, and replace the %PASSWD% variable in 2-hakni.ldif with it:
+
+```console
+mkpasswd --rounds 500000 -m sha-512 --salt `head -c 40 /dev/random | base64 | sed -e 's/+/./g' |  cut -b 10-25` 'ForgetAboutIt' > password.txt && history -d $(history 1)
+sed "s/%PASSWD%/$(sed -e 's/[\/&]/\\&/g' password.txt)/g" -i openldap/ldif/2-hakni.ldif
+rm password.txt
+```
+
+Restart the container:
+
+```console
+docker compose down
+docker compose up -d
+```
+
+Show the IP of the container and store it in the openldapIP variable:
+
+```console
+openldapCID=$(docker ps -a | grep hakni/openldap-alpine | cut -c1-8)
+openldapIP=$(docker inspect -f '{{range.NetworkSettings.Networks}}{{.IPAddress}}{{end}}' $openldapCID)
+echo $openldapIP
+```
+
+Query openldap to check ldif files have been loaded:
+
+```console
+ldapsearch -h $openldapIP -D "cn=ldap_root_usr,dc=serendipity-dev,dc=com" -w DoNotUseThisPassword -b "dc=serendipity-dev,dc=com" "uid=hakni"  && history -d $(history 1)
+```
+
+If everything is correct, you should get an answer like this:
+
+```console
+# extended LDIF
+#
+# LDAPv3
+# base <dc=serendipity-dev,dc=com> with scope subtree
+# filter: uid=hakni
+# requesting: ALL
+#
+
+# hakni, Users, serendipity-dev.com
+dn: uid=hakni,ou=Users,dc=serendipity-dev,dc=com
+cn: Alfredo Schiappa
+objectClass: inetOrgPerson
+objectClass: posixAccount
+mail: hakni@serendipity-dev.com
+homeDirectory: /home/hakni
+loginShell: /bin/sh
+ou: Users
+givenName: Alfredo
+sn: Schiappa
+uid: hakni
+uidNumber: 11001
+gidNumber: 10001
+userPassword:: e0NSWVBUfSQ2JHJvdW5kcz01MDAwMDAkWllWWktGZDI4ZEUzN0NyLyRvV2ozaFV
+ vdVVkdklzLzVVOHZVTVd5a3R5WlNRcHFnZUFmY3NxbGJBNHNrZHFtWHA5am9jUzdvajBQTTk3WmdD
+ OXFITGZTMVMvZ3JBNDM3dnlqV2hSMA==
+
+# search result
+search: 2
+result: 0 Success
+
+
+# numResponses: 2
+# numEntries: 1
 ```
