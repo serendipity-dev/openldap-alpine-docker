@@ -257,6 +257,12 @@ Query openldap to check ldif files have been loaded:
 ldapsearch -h $openldapIP -D "cn=ldap_root_usr,dc=serendipity-dev,dc=com" -w DoNotUseThisPassword -b "dc=serendipity-dev,dc=com" "uid=hakni"  && history -d $(history 1)
 ```
 
+You should also be able to use lsapsearch with the hakni user's credentials
+
+```console
+ldapsearch -h $openldapIP -D "uid=hakni,ou=Users,dc=serendipity-dev,dc=com" -w ForgetAboutIt -b "dc=serendipity-dev,dc=com" "uid=hakni"  && history -d $(history 1)
+```
+
 If everything is correct, you should get an answer like this:
 
 ```console
