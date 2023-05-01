@@ -4,7 +4,7 @@ on:
   push:
     branches: [ "master" ]
     tags:
-      - '[0-9]+.[0-9]+'
+      - 'v[0-9]+.[0-9]+.[0-9]+'
       
 jobs:
 
@@ -14,9 +14,16 @@ jobs:
 
     steps:
     - uses: actions/checkout@v3
+
+    - name: Extract version number
+      env:
+        BRANCH: ${{ github.ref_name }}
+      id: version
+      run: echo "::set-output name=number::${BRANCH##*/v}"
+        
     - name: Build-Publish the Docker image
       env:
-        tag_version: ${{ github.ref_name }}.${{ github.run_number }}
+        tag_version: ${{ steps.version.outputs.number }}
       run: |
         docker build . --file Dockerfile --tag hakni/openldap-alpine:latest --tag hakni/openldap-alpine:$tag_version --tag hakni/openldap-alpine:3.17.2-$tag_version
         docker login --username ${{ secrets.DOCKERHUB_USERNAME }} --password-stdin <<< ${{ secrets.DOCKERHUB_PASSWORD }}
