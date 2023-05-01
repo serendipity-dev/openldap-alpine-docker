@@ -131,7 +131,9 @@ EOT
 
 ```
 
-Check that you have mkpasswd installed and install it if not (it is contained in whois package on Debian distributions):
+Because the image is using a specific encryption scheme for passwords (password-crypt-salt-format "$6$rounds=50000$%.16s"), mkpasswd must be used to generate every password's hash. 
+
+Check that mkpasswd is installed and install it if not (it is contained in whois package on Debian distributions):
 
 ```console
 which mkpasswd || apt-get install whois
@@ -160,7 +162,7 @@ openldapIP=$(docker inspect -f '{{range.NetworkSettings.Networks}}{{.IPAddress}}
 echo $openldapIP
 ```
 
-Check that you have ldapsearch installed and install it if not (it is contained in ldap-utils package on Debian distributions):
+Check that ldapsearch is installed and install it if not (it is contained in ldap-utils package on Debian distributions):
 
 ```console
 which ldapsearch || apt-get install ldap-utils
