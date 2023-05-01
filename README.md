@@ -81,3 +81,111 @@ container mount `/var/lib/openldap/openldap-data`
 | :------- | :---------- |
 | `/var/lib/openldap/openldap-data` | this is to hold the LDAP database. By default the container uses a standard mdb backend.  |
 
+
+## Usage examples
+
+Here follows some usage examples to get you up and running. These examples assume that you have a Debian Linux machine with docker installed and are familiar with its use.
+
+### Set up and run openldap with minimal customisation
+
+First, create a folder to host your docker-compose.yml file and jump into it:
+
+```console
+mkdir -p /srv/docker-services/compose-openldap
+cd /srv/docker-services/compose-openldap
+```
+
+Now build the folders to hold your ldap data and customizations:
+
+```console
+mkdir -p openldap/{data,schemas_ext,acs_ext,indexes_ext,certs,ldif}
+```
+
+Create a docker-compose.yml file so that it contains the openldap service definition based on the hakni/openldap-alpine image:
+
+```console
+touch docker-compose.yml
+cat <<EOT >> docker-compose.yml
+version: '3'
+
+services:
+  openldap:
+    image: hakni/openldap-alpine:latest
+    hostname: ldap.serendipity-dev.com
+    network_mode: "bridge"
+    restart: always
+    environment:
+      ORGANISATION_NAME: "Serendipity Development"
+      SUFFIX: "dc=serendipity-dev,dc=com"
+      ROOT_USER: "ldap_root_usr"
+      ROOT_PW: "{CRYPT}%PASSWD%"
+      LOG_LEVEL: "stats"
+    volumes:
+      - $PWD/openldap/certs:/etc/ssl/certs
+      - $PWD/openldap/data:/var/lib/openldap/openldap-data
+      - $PWD/openldap/ldif:/ldif
+      - $PWD/openldap/schemas_ext:/etc/openldap/schemas_ext
+      - $PWD/openldap/acs_ext:/etc/openldap/acs_ext
+      - $PWD/openldap/indexes_ext:/etc/openldap/indexes_ext
+EOT
+
+```
+
+Check that you have mkpasswd installed and install it if not (it is contained in whois package on Debian distributions):
+
+```console
+which mkpasswd || apt-get install whois
+```
+
+Choose a password for ldap_root_usr, apply some cryptography, and replace the %PASSWD% variable in doocker-compose.yml with it (properly escaping $ characters):
+
+```console
+mkpasswd --rounds 500000 -m sha-512 --salt `head -c 40 /dev/random | base64 | sed -e 's/+/./g' |  cut -b 10-25` 'DoNotUseThisPassword' > password.txt && history -d $(history 1)
+sed -i 's/\$/\$\$/g' password.txt 
+sed "s/%PASSWD%/$(sed -e 's/[\/&]/\\&/g' password.txt)/g" -i docker-compose.yml
+rm password.txt
+```
+
+Start the container:
+
+```console
+docker compose up -d
+```
+
+Show the IP of the container and store it in the openldapIP variable:
+
+```console
+openldapCID=$(docker ps -a | grep hakni/openldap-alpine | cut -c1-8)
+openldapIP=$(docker inspect -f '{{range.NetworkSettings.Networks}}{{.IPAddress}}{{end}}' $openldapCID)
+echo $openldapIP
+```
+
+Check that you have ldapsearch installed and install it if not (it is contained in ldap-utils package on Debian distributions):
+
+```console
+which ldapsearch || apt-get install ldap-utils
+```
+
+Query openldap to check everything is working:
+
+```console
+ldapsearch -h $openldapIP -D "cn=ldap_root_usr,dc=serendipity-dev,dc=com" -w DoNotUseThisPassword -b "dc=serendipity-dev,dc=com" "uid=hakni"  && history -d $(history 1)
+```
+
+If everything is correct, you should get an answer like this:
+
+```console
+# extended LDIF
+#
+# LDAPv3
+# base <dc=serendipity-dev,dc=com> with scope subtree
+# filter: uid=hakni
+# requesting: ALL
+#
+
+# search result
+search: 2
+result: 0 Success
+
+# numResponses: 1
+```
