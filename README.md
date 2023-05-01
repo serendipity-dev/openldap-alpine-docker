@@ -8,7 +8,7 @@ network.
 This image is based on Alpine Linux and OpenLDAP. 
 This is a fork from the original image available at https://github.com/gitphill/ldap-alpine from Phill Garrett (https://github.com/gitphill).
 
-## Customisation
+## Customization
 
 The LDAP server can be configured overriding environment variables and setting up some volumes at specific mount points.
 
