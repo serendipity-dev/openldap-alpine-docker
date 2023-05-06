@@ -24,9 +24,9 @@ Override the following environment variables when running the docker container t
 | ROOT_PW | Root password | password |
 | LOG_LEVEL | LDAP logging level, see below for valid values. | stats |
 | TLS_VERIFY_CLIENT | Option for client certificate verification. Valid values are allow, try, never, demand | demand |
-| CA_FILE | the CA's that openldap will trust | /etc/ssl/certs/ca.pem |
-| KEY_FILE | The openldap server private key | /etc/ssl/certs/public.key |
-| CERT_FILE | The openldap server certificate | /etc/ssl/certs/public.crt |
+| CA_FILE | the CA's that openldap will trust |  |
+| KEY_FILE | The openldap server private key |  |
+| CERT_FILE | The openldap server certificate |  |
 
 #### Logging Levels
 
