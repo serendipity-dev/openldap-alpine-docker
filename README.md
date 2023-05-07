@@ -24,9 +24,9 @@ Override the following environment variables when running the docker container t
 | ROOT_PW | Root password | password |
 | LOG_LEVEL | LDAP logging level, see below for valid values. | stats |
 | TLS_VERIFY_CLIENT | Option for client certificate verification. Valid values are allow, try, never, demand | demand |
-| CA_FILE | the CA's that openldap will trust |  |
-| KEY_FILE | The openldap server private key |  |
-| CERT_FILE | The openldap server certificate |  |
+| CA_FILE | the CA's that openldap will trust, usually a .pem file |  |
+| KEY_FILE | The openldap server private key, usually a .key file |  |
+| CERT_FILE | The openldap server certificate, usually a .crt file |  |
 
 #### Logging Levels
 
@@ -302,3 +302,63 @@ result: 0 Success
 # numResponses: 2
 # numEntries: 1
 ```
+
+
+### Add TLS support
+
+This example assumes you own a domain name of some kind and you can provide the corresponding .pem, .key and .crt files to be used for setting up openldap tls configuration with this domain. 
+If you don't have these files, you can get them installing and using a ACME (Automatic Certificate Management Environment) client like acme.sh (which should work on any Linux server).
+
+Install acme.sh:
+
+```console
+wget -O -  https://get.acme.sh | sh
+```
+
+Generate a wildcard certificate. This example will be using acme.sh DNS validation in Manual DNS mode:
+
+```console
+acme.sh --issue -d serendipity-dev.com -d *.serendipity-dev.com --dns --yes-I-know-dns-manual-mode-enough-go-ahead-please
+```
+
+if everything ok, acme.sh will generate the private key and the CSR, then it will display the two DNS records to add for validating certificate issuance, something like:
+
+```console
+[Sat 06 May 2023 11:48:12 PM UTC] Add the following TXT record:
+[Sat 06 May 2023 11:48:12 PM UTC] Domain: '_acme-challenge.serendipity-dev.com'
+[Sat 06 May 2023 11:48:12 PM UTC] TXT value: 'TkcYtkbkvagdGG78YzLEdJF_JkV9GXtH8x-9f6nsM'
+[Sat 06 May 2023 11:48:12 PM UTC] Please be aware that you prepend _acme-challenge. before your domain
+[Sat 06 May 2023 11:48:12 PM UTC] so the resulting subdomain will be: _acme-challenge.serendipity-dev.com
+[Sat 06 May 2023 11:48:12 PM UTC] Add the following TXT record:
+[Sat 06 May 2023 11:48:12 PM UTC] Domain: '_acme-challenge.serendipity-dev.com'
+[Sat 06 May 2023 11:48:12 PM UTC] TXT value: '39boLncIG-2GWXx4GG8f6kgzDZAQrk_F7FwohnTE3Zo'
+[Sat 06 May 2023 11:48:12 PM UTC] Please be aware that you prepend _acme-challenge. before your domain
+[Sat 06 May 2023 11:48:12 PM UTC] so the resulting subdomain will be: _acme-challenge.serendipity-dev.com
+[Sat 06 May 2023 11:48:12 PM UTC] Please add the TXT records to the domains, and re-run with --renew.
+```
+
+You have to add the TXT records for your domain through your DNS management tool, then you have to re-run the acme.sh script with --renew option:
+
+```console
+acme.sh --renew -d serendipity-dev.com -d *.serendipity-dev.com --dns --yes-I-know-dns-manual-mode-enough-go-ahead-please
+```
+
+If everything is ok, acme.sh will get your certificates and print something ending like this:
+
+```console
+[Sat 06 May 2023 11:50:26 PM UTC] Your cert is in: /root/.acme.sh/serendipity-dev.com_ecc/serendipity-dev.com.cer
+[Sat 06 May 2023 11:50:26 PM UTC] Your cert key is in: /root/.acme.sh/serendipity-dev.com_ecc/serendipity-dev.com.key
+[Sat 06 May 2023 11:50:26 PM UTC] The intermediate CA cert is in: /root/.acme.sh/serendipity-dev.com_ecc/ca.cer
+[Sat 06 May 2023 11:50:26 PM UTC] And the full chain certs is there: /root/.acme.sh/serendipity-dev.com_ecc/fullchain.cer
+```
+
+
+
+
+
+
+
+
+
+
+
